@@ -1,0 +1,10 @@
+# yarn deploy - run command to update schema and graphql database model
+
+# ! at end makes it required.
+# Wrap with [] to make an array
+# @unique - directives
+type User {
+  id: ID! @unique
+  name: String!
+  email: String!
+}
