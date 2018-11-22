@@ -1,7 +1,18 @@
-﻿type Mutation {
-  hi: String
+﻿# Public facing API that is hosted on Yoga server. We interface with it with JS
+
+# below comment actually imports schema from file, only imports what is called (ex: Item)
+# import * from './generated/prisma.graphql'
+
+type Mutation {
+  createItem(
+    title: String
+    description: String
+    price: Int
+    image: String
+    largeImage: String
+  ): Item!
 }
 
 type Query {
-  hi: String
+  items: [Item]!
 }

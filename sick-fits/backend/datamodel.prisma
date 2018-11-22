@@ -1,10 +1,23 @@
+﻿# THIS IS SCHEMA FOR PRISMA AND DATABASE THAT LIVES IN PRISMA
+
+# ANY TIME YOU MAKE A CHANGE TO WHAT DATA MODEL LOOKS LIKE YOU HAVE TO ...
 # yarn deploy - run command to update schema and graphql database model
 
-# ! at end makes it required.
-# Wrap with [] to make an array
 # @unique - directives
 type User {
   id: ID! @unique
   name: String!
   email: String!
+}
+
+type Item {
+  id: ID! @unique
+  title: String!
+  description: String!
+  image: String
+  largeImage: String
+  price: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  # user: User!
 }

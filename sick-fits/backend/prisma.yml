@@ -1,7 +1,8 @@
 endpoint: ${env:PRISMA_ENDPOINT}
 datamodel: datamodel.prisma
+# cluster: local
 # secret: ${env:PRISMA_SECRET}
-# hook will
+# hook will get new prisma schema and save as /src/generated/prisma.graphql
 hooks:
   post-deploy:
     - graphql get-schema -p prisma
