@@ -35,11 +35,11 @@ const CREATE_ITEM_MUTATION = gql`
 
 class CreateItem extends Component {
   state = {
-    title: 'Cool Shoes',
-    description: 'I love those Contexts',
-    image: 'bingo-bango.jpg',
-    largeImage: 'Wow',
-    price: 110,
+    title: '',
+    description: '',
+    image: '',
+    largeImage: '',
+    price: 0,
   };
 
   // Very robust handle change func
@@ -50,6 +50,32 @@ class CreateItem extends Component {
     const val = type === 'number' ? parseFloat(value) : value;
 
     this.setState({ [name]: val });
+  };
+
+  // Runs on change for file input
+  uploadFile = async e => {
+    console.log('Uploading file...');
+    const files = e.target.files;
+    // Prep data for sendoff
+    const data = new FormData();
+    // Cloudinary requires following data
+    data.append('file', files[0]);
+    data.append('upload_preset', 'sickfits');
+
+    const res = await fetch(
+      'https://api.cloudinary.com/v1_1/ashco/image/upload',
+      {
+        method: 'POST',
+        body: data,
+      }
+    );
+    // Parse data that comes back, converts res into json
+    const file = await res.json();
+    console.log(file);
+    this.setState({
+      image: file.secure_url,
+      largeImage: file.eager[0].secure_url, // secondary transform that happens
+    });
   };
 
   render() {
@@ -74,6 +100,25 @@ class CreateItem extends Component {
             <Error error={error} />
             {/* fieldset is cool because you can set it to disabled and prevent form from being used / submitting new data */}
             <fieldset disabled={loading} aria-busy={loading}>
+              <label htmlFor="file">
+                Image
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  placeholder="Upload an image"
+                  required
+                  onChange={this.uploadFile}
+                />
+                {this.state.image && (
+                  <img
+                    width="200px"
+                    src={this.state.image}
+                    alt="Upload Preview"
+                  />
+                )}
+              </label>
+
               <label htmlFor="title">
                 Title
                 <input
