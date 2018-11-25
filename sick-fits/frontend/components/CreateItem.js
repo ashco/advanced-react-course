@@ -81,7 +81,7 @@ class CreateItem extends Component {
   render() {
     return (
       // Can pass in variables in component
-      <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
+      <Mutation refetchQueries={} mutation={CREATE_ITEM_MUTATION} variables={this.state}>
         {(createItem, { loading, error }) => (
           <Form
             onSubmit={async e => {
