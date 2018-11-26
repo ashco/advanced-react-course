@@ -3,11 +3,26 @@
 # ANY TIME YOU MAKE A CHANGE TO WHAT DATA MODEL LOOKS LIKE YOU HAVE TO ...
 # yarn deploy - run command to update schema and graphql database model
 
-# @unique - directives
+enum Permission {
+  # enum is handy for when you want a preset list of possible options for a type
+  # Don't have to keep list anywhere else, just in graphql
+  # only possible options
+  ADMIN
+  USER
+  ITEMCREATE
+  ITEMUPDATE
+  ITEMDELETE
+  PERMISSIONUPDATE
+}
+
 type User {
-  id: ID! @unique
+  id: ID! @unique # @unique - directives
   name: String!
-  email: String!
+  email: String! @unique
+  password: String!
+  resetToken: String
+  resetTokenExpiry: Float
+  permissions: [Permission]
 }
 
 type Item {

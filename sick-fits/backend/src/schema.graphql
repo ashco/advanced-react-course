@@ -3,6 +3,11 @@
 # below comment actually imports schema from file, only imports what is called (ex: Item)
 # import * from './generated/prisma.graphql'
 
+type SuccessMessage {
+  message: String
+}
+
+# ANYTIME YOU ADD A MUTATION / QUERY TO SCHEMA, YOU HAVE TO CREATE THE CORRISPONDING RESOLVER (LOCATED IN ./RESOLVERS FOLDER)
 type Mutation {
   createItem(
     title: String
@@ -11,8 +16,37 @@ type Mutation {
     image: String
     largeImage: String
   ): Item!
+  # nothing required because you may not update
+  updateItem(id: ID!, title: String, description: String, price: Int): Item!
+  deleteItem(id: ID!): Item
+  # run signup, takes in email, pw, name (all required), returns user (required)
+  signup(email: String!, password: String!, name: String!): User!
+  signin(email: String!, password: String!): User!
+  signout: SuccessMessage
+  requestReset(email: String!): SuccessMessage
+  resetPassword(
+    resetToken: String!
+    password: String!
+    confirmPassword: String!
+  ): User!
 }
 
 type Query {
-  items: [Item]!
+  items(
+    where: ItemWhereInput
+    orderBy: ItemOrderByInput
+    skip: Int
+    first: Int
+  ): [Item]!
+  item(where: ItemWhereUniqueInput!): Item
+  itemsConnection(where: ItemWhereInput): ItemConnection!
+  # used for login, not ! b/c it may not find a user to login
+  me: User
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  permissions: [Permission!]!
 }
