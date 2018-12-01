@@ -1,4 +1,5 @@
 const { forwardTo } = require('prisma-binding');
+const { hasPermission } = require('../utils');
 
 // Entries in here are called resolvers. Resolvers are how we declare how the server can interact with Prisma DB
 const Query = {
@@ -25,6 +26,17 @@ const Query = {
       },
       info // this passes along specific stuff... not entirely sure
     );
+  },
+
+  async users(parent, args, ctx, info) {
+    // 1. Check if they are logged in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in.');
+    }
+    // 2. Check if user has permissions to query all users
+    hasPermission(ctx.request.user, ['ADMIN', 'PERMISSIONUPDATE']);
+    // 3. If they do, query all the users
+    return ctx.db.query.users({}, info); // info includes graphql query that has the fields we are requesting (from front end).
   },
 };
 

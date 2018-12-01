@@ -29,6 +29,18 @@ server.express.use((req, res, next) => {
   next(); // signal to continue on
 });
 
+// 2. Create a middleware that populates the user on each request
+server.express.use(async (req, res, next) => {
+  // if they aren't logged in, skip this
+  if (!req.userId) return next();
+  const user = await db.query.user(
+    { where: { id: req.userId } },
+    '{ id, permissions, email, name }'
+  );
+  req.user = user;
+  next();
+});
+
 // Start it up!
 // Hot Tip! Run yarn dev to throw --inspect flag on startup process, which dumps logs into chrome dev tools, not just terminal
 // Hot Tip 2! yarn dev will restart when changes are made to js or graphql, needs to be specifically stated in command.

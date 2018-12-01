@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util'); // turns callback functions into promise based functions
 
+const { transport, makeANiceEmail } = require('../mail');
+
 const Mutations = {
   // // Must mirror what's in schema
   // createDog(parent, args, ctx, info) {
@@ -18,12 +20,21 @@ const Mutations = {
   //* function names have to match what is in schema
 
   async createItem(parent, args, ctx, info) {
-    // TODO: check if logged in
+    // check if logged in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in to do that.');
+    }
 
     // This is a Promise
     const item = await ctx.db.mutation.createItem(
       {
         data: {
+          // This is how we create a relationship between the Item and the User
+          user: {
+            connect: {
+              id: ctx.request.userId,
+            },
+          },
           ...args,
         },
       },
@@ -138,8 +149,20 @@ const Mutations = {
       data: { resetToken, resetTokenExpiry },
     });
     console.log(res);
-    return { message: 'thanks' };
     // 3. email them a reset token
+    const mailRes = await transport.sendMail({
+      from: 'ash@ashco.io',
+      to: user.email,
+      subject: 'Your Password Reset Token',
+      html: makeANiceEmail(`Your Password Reset Token is Here!
+      \n\n
+      <a href="${
+        process.env.FRONTEND_URL
+      }/reset?resetToken=${resetToken}">Click Here to Reset</a>`),
+    });
+
+    // 4. Return the message
+    return { message: 'thanks' };
   },
 
   async resetPassword(parent, args, ctx, info) {
