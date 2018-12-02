@@ -40,7 +40,9 @@ class DeleteItem extends Component {
             onClick={() => {
               //* confirm() function creates pop up that you can click yes or no on!!
               if (confirm('Are you sure you want to delete this item?')) {
-                deleteItem();
+                deleteItem().catch(err => {
+                  alert(err.message);
+                });
               }
             }}
           >
