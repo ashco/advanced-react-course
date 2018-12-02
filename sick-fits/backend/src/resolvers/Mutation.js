@@ -67,7 +67,7 @@ const Mutations = {
   async deleteItem(parent, args, ctx, info) {
     const where = { id: args.id };
     // 1. find the item
-    const item = await ctx.db.query.item({ where }, `{ id title user {id } }`);
+    const item = await ctx.db.query.item({ where }, `{ id title user { id } }`);
     // 2. check if they own item or have permissions
     const ownsItem = item.user.id === ctx.request.userId;
     const hasPermissions = ctx.request.user.permissions.some(permission =>
@@ -239,6 +239,47 @@ const Mutations = {
         },
         where: {
           id: args.userId,
+        },
+      },
+      info
+    );
+  },
+
+  async addToCart(parent, args, ctx, info) {
+    // 1. Make sure they are signed in
+    const { userId } = ctx.request;
+    if (!userId) {
+      throw new Error('You must be signed in!');
+    }
+    // 2. Query the users current cart
+    const [existingCartItem] = await ctx.db.query.cartItems({
+      // more flexible queries from cartItems, not cartItem
+      where: {
+        user: { id: userId }, // has THIS user
+        item: { id: args.id }, // put THIS item into their cart before?
+      },
+    });
+    // 3. Check if the item is in the cart and increment by 1 if it is
+    if (existingCartItem) {
+      console.log('This item is alread in their cart');
+      return ctx.db.mutation.updateCartItem(
+        {
+          where: { id: existingCartItem.id },
+          data: { quantity: existingCartItem.quantity + 1 },
+        },
+        info
+      );
+    }
+    // 4. if not, create a fresh cart item for that user
+    return ctx.db.mutation.createCartItem(
+      {
+        data: {
+          user: {
+            connect: { id: userId },
+          },
+          item: {
+            connect: { id: args.id },
+          },
         },
       },
       info
