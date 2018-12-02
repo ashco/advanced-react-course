@@ -1,7 +1,9 @@
-﻿import React, { Component } from 'react';
+﻿import React from 'react';
 import formatMoney from '../lib/formatMoney';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+
+import RemoveFromCart from './RemoveFromCart';
 
 const CartItemStyles = styled.li`
   padding: 1rem 0;
@@ -18,21 +20,32 @@ const CartItemStyles = styled.li`
   }
 `;
 
-const CartItem = ({ cartItem }) => (
-  <CartItemStyles>
-    <img width="100" src={cartItem.item.image} alt={cartItem.item.title} />
-    <div className="cart-item-details">
-      <h3>{cartItem.item.title}</h3>
-      <p>
-        {formatMoney(cartItem.item.price * cartItem.quantity)}
-        {' - '}
-        <em>
-          {cartItem.quantity} &times; {formatMoney(cartItem.item.price)} each
-        </em>
-      </p>
-    </div>
-  </CartItemStyles>
-);
+const CartItem = ({ cartItem }) => {
+  // first check if item exists
+  if (!cartItem.item)
+    return (
+      <CartItemStyles>
+        This Item has been removed.
+        <RemoveFromCart id={cartItem.id} />
+      </CartItemStyles>
+    );
+  return (
+    <CartItemStyles>
+      <img width="100" src={cartItem.item.image} alt={cartItem.item.title} />
+      <div className="cart-item-details">
+        <h3>{cartItem.item.title}</h3>
+        <p>
+          {formatMoney(cartItem.item.price * cartItem.quantity)}
+          {' - '}
+          <em>
+            {cartItem.quantity} &times; {formatMoney(cartItem.item.price)} each
+          </em>
+        </p>
+      </div>
+      <RemoveFromCart id={cartItem.id} />
+    </CartItemStyles>
+  );
+};
 
 CartItem.propTypes = {
   cartItem: PropTypes.object.isRequired,
