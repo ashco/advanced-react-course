@@ -36,7 +36,7 @@ const Dot = styled.div`
   line-height: 2rem;
   min-width: 3rem;
   margin-left: 1rem;
-  font-weight: 100;
+  font-weight: 300;
   /* next 2 features set width of numbers to always be the same, regardless of if number is skinny or fat */
   font-feature-settings: 'tnum';
   font-variant-numeric: tabular-nums;
