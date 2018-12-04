@@ -7,6 +7,8 @@ const { promisify } = require('util'); // turns callback functions into promise 
 const { hasPermission } = require('../utils');
 const { transport, makeANiceEmail } = require('../mail');
 
+const stripe = require('../stripe');
+
 const Mutations = {
   // // Must mirror what's in schema
   // createDog(parent, args, ctx, info) {
@@ -309,6 +311,42 @@ const Mutations = {
       },
       info
     );
+  },
+
+  async createOrder(parent, args, ctx, info) {
+    // 1. Query the current user , make sure they are signed in
+    const { userId } = ctx.request;
+    if (!userId)
+      throw new Error('You must be signed in to complete this order.');
+    const user = await ctx.db.query.user(
+      { where: { id: userId } },
+      `{
+        id
+        name
+        email
+        cart {
+          id
+          quantity
+          item { title price id description image }
+        }
+      }`
+    );
+    // 2. recalculate the total for the price - make sure noone is sending over 1cent  price by manipulative JS.
+    const amount = user.cart.reduce(
+      (tally, cartItem) => tally + cartItem.item.price * cartItem.quantity,
+      0
+    );
+    console.log(`Going to charge for a total of ${amount}`);
+    // 3. Create the stripe charge (turn token into $$$)
+    const charge = await stripe.charges.create({
+      amount,
+      currency: 'USD',
+      source: args.token,
+    });
+    // 4. convert the cartitems to orderitems
+    // 5. create the order
+    // 6. Clean up - clear the users cart, delete cartItems
+    // 7. return the Order to the client
   },
 };
 
