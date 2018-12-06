@@ -38,6 +38,30 @@ const Query = {
     // 3. If they do, query all the users
     return ctx.db.query.users({}, info); // info includes graphql query that has the fields we are requesting (from front end).
   },
+
+  async order(parent, args, ctx, info) {
+    // 1. Make sure they are logged in
+    if (!ctx.request.userId) {
+      throw new Error('You arent logged in!');
+    }
+    // 2. Query the current order
+    const order = await ctx.db.query.order(
+      {
+        where: { id: args.id },
+      },
+      info
+    );
+    // 3. Check if they have the permission to see this order
+    const ownsOrder = order.user.id === ctx.request.userId;
+    const hasPermissionToSeeOrder = ctx.request.user.permissions.includes(
+      'ADMIN'
+    );
+    if (!ownsOrder || !hasPermissionToSeeOrder) {
+      throw new Error('You cant see this budddy');
+    }
+    // 4. Return the order
+    return order;
+  },
 };
 
 module.exports = Query;

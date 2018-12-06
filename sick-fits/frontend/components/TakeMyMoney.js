@@ -28,16 +28,22 @@ function totalItems(cart) {
 }
 
 class TakeMyMoney extends React.Component {
-  onToken = (res, createOrder) => {
+  onToken = async (res, createOrder) => {
+    NProgress.start();
     console.log('On Tken Called');
     console.log(res);
     // manually call mutation when we have stripe token
-    createOrder({
+    const order = await createOrder({
       variables: {
         token: res.id,
       },
     }).catch(err => {
       alert(err.message);
+    });
+    NProgress.done();
+    Router.push({
+      pathname: '/orders',
+      query: { id: order.data.createOrder.id },
     });
   };
 
@@ -50,21 +56,25 @@ class TakeMyMoney extends React.Component {
             // need to refetch so you can show user has no items in cart when done
             refetchQueries={[{ query: CURRENT_USER_QUERY }]}
           >
-            {createOrder => (
-              <StripeCheckout
-                amount={calcTotalPrice(me.cart)}
-                name="Sick Fits"
-                description={`Order of ${totalItems(me.cart)} items!`}
-                image={me.cart[0].item && me.cart[0].item.image}
-                stripeKey="pk_test_dyebL6pua3ArkTRlurmGUaGZ"
-                currency="USD"
-                email={me.email}
-                // will pass token to backend for processing, not CC info
-                token={res => this.onToken(res, createOrder)}
-              >
-                {this.props.children}
-              </StripeCheckout>
-            )}
+            {createOrder =>
+              console.log(me) || (
+                <StripeCheckout
+                  amount={calcTotalPrice(me.cart)}
+                  name="Sick Fits"
+                  description={`Order of ${totalItems(me.cart)} items!`}
+                  image={
+                    me.cart.length && me.cart[0].item && me.cart[0].item.image
+                  }
+                  stripeKey="pk_test_dyebL6pua3ArkTRlurmGUaGZ"
+                  currency="USD"
+                  email={me.email}
+                  // will pass token to backend for processing, not CC info
+                  token={res => this.onToken(res, createOrder)}
+                >
+                  {this.props.children}
+                </StripeCheckout>
+              )
+            }
           </Mutation>
         )}
       </User>

@@ -47,6 +47,7 @@ type Query {
   # used for login, not ! b/c it may not find a user to login
   me: User
   users: [User]! # require an array, but array can be empty
+  order(id: ID!): Order
 }
 
 type User {
