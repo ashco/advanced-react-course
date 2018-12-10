@@ -44,7 +44,7 @@ const fakeOrder = () => ({
   user: fakeUser(),
 });
 
-const fakeCartItem = (overrides) => ({
+const fakeCartItem = overrides => ({
   __typename: 'CartItem',
   id: 'omg123',
   quantity: 3,
@@ -53,7 +53,7 @@ const fakeCartItem = (overrides) => ({
   ...overrides,
 });
 
-// Fake LocalStorage
+// Fake LocalStorage bc running in node, not browser
 class LocalStorageMock {
   constructor() {
     this.store = {};
