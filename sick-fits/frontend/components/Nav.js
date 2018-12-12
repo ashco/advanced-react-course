@@ -10,7 +10,7 @@ const Nav = props => (
   <User>
     {/* Didn't realize you can descructure something like this */}
     {({ data: { me } }) => (
-      <NavStyles>
+      <NavStyles data-test="nav">
         <Link href="/items">
           <a>Shop</a>
         </Link>
