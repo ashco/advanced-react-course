@@ -54,7 +54,7 @@ class CreateItem extends Component {
 
   // Runs on change for file input
   uploadFile = async e => {
-    console.log('Uploading file...');
+    // console.log('Uploading file...');
     const files = e.target.files;
     // Prep data for sendoff
     const data = new FormData();
@@ -71,7 +71,7 @@ class CreateItem extends Component {
     );
     // Parse data that comes back, converts res into json
     const file = await res.json();
-    console.log(file);
+    // console.log(file);
     this.setState({
       image: file.secure_url,
       largeImage: file.eager[0].secure_url, // secondary transform that happens
@@ -84,6 +84,7 @@ class CreateItem extends Component {
       <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
         {(createItem, { loading, error }) => (
           <Form
+            data-test="form"
             onSubmit={async e => {
               // Stop form from submitting
               e.preventDefault();
