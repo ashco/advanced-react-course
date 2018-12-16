@@ -41,7 +41,7 @@ server.express.use(async (req, res, next) => {
   next();
 });
 
-// Start it up!
+// Start it up!!!
 // Hot Tip! Run yarn dev to throw --inspect flag on startup process, which dumps logs into chrome dev tools, not just terminal
 // Hot Tip 2! yarn dev will restart when changes are made to js or graphql, needs to be specifically stated in command.
 server.start(
