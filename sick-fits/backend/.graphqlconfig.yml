@@ -1,10 +1,10 @@
 projects:
   app:
-    schemaPath: "src/schema.graphql"
+    schemaPath: 'src/schema.graphql'
     extensions:
       endpoints:
-        default: "http://localhost:4444"
+        default: 'https://sick-fits-prod-dbbd8cb7ec.herokuapp.com/sick-fits-prod/prod'
   prisma:
-    schemaPath: "src/generated/prisma.graphql"
+    schemaPath: 'src/generated/prisma.graphql'
     extensions:
       prisma: prisma.yml
