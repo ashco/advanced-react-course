@@ -30,8 +30,7 @@ function totalItems(cart) {
 class TakeMyMoney extends React.Component {
   onToken = async (res, createOrder) => {
     NProgress.start();
-    console.log('On Tken Called');
-    console.log(res);
+    // console.log(res);
     // manually call mutation when we have stripe token
     const order = await createOrder({
       variables: {
@@ -50,14 +49,15 @@ class TakeMyMoney extends React.Component {
   render() {
     return (
       <User>
-        {({ data: { me } }) => (
-          <Mutation
-            mutation={CREATE_ORDER_MUTATION}
-            // need to refetch so you can show user has no items in cart when done
-            refetchQueries={[{ query: CURRENT_USER_QUERY }]}
-          >
-            {createOrder =>
-              console.log(me) || (
+        {({ data: { me }, loading }) => {
+          if (loading) return null;
+          return (
+            <Mutation
+              mutation={CREATE_ORDER_MUTATION}
+              // need to refetch so you can show user has no items in cart when done
+              refetchQueries={[{ query: CURRENT_USER_QUERY }]}
+            >
+              {createOrder => (
                 <StripeCheckout
                   amount={calcTotalPrice(me.cart)}
                   name="Sick Fits"
@@ -73,13 +73,14 @@ class TakeMyMoney extends React.Component {
                 >
                   {this.props.children}
                 </StripeCheckout>
-              )
-            }
-          </Mutation>
-        )}
+              )}
+            </Mutation>
+          );
+        }}
       </User>
     );
   }
 }
 
 export default TakeMyMoney;
+export { CREATE_ORDER_MUTATION };
